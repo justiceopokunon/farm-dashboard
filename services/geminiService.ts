@@ -2,7 +2,12 @@
 import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
 import { ChatMessage, SensorData, HardwareNode } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey =
+  import.meta.env.VITE_GEMINI_API_KEY ||
+  (process.env.API_KEY as string | undefined) ||
+  (process.env.GEMINI_API_KEY as string | undefined);
+
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 // Define tools for the AI to interact with the farm
 const farmTools: FunctionDeclaration[] = [
@@ -53,6 +58,10 @@ let cachedInsights: string[] = [
 const INSIGHTS_THROTTLE_MS = 120000; 
 
 export const getCropInsights = async (sensorData: SensorData[]) => {
+  if (!ai) {
+    return cachedInsights;
+  }
+
   const now = Date.now();
   
   // If we fetched recently, return cached data to avoid hitting quota limits
@@ -98,6 +107,10 @@ export const chatWithAI = async (
   history: ChatMessage[], 
   systemContext?: { sensors: SensorData[], hardware: HardwareNode[], controls: any }
 ) => {
+  if (!ai) {
+    return null;
+  }
+
   try {
     const contextString = systemContext 
       ? `CURRENT SYSTEM STATUS:
