@@ -1,0 +1,8 @@
+{
+  "name": "Farm Monitoring Dashboard",
+  "description": "A high-end, modern dashboard for farm monitoring and AI-driven crop disease detection, featuring real-time sensor analytics and AI insights.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
